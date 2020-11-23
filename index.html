@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <script src="js/babel.min.js"></script>
+    <script src="js/react.development.js"></script>
+    <script src="js/react-dom.development.js"></script>
+</head>
+<body>
+<!--react.min.js - React 的核心库-->
+<!--react-dom.min.js - 提供与 DOM 相关的功能-->
+<!--babel.min.js - Babel 可以将 ES6 代码转为 ES5 代码，这样我们就能在目前不支持 -->
+<!--ES6 浏览器上执行 React 代码。Babel 内嵌了对 JSX 的支持。通过将 Babel 和-->
+<!--babel-sublime 包（package）一同使用可以让源码的语法渲染上升到一个全新的水平。-->
+<div id="app"></div>
+
+<script type="text/babel">
+    // ES6 class 来定义组件
+    // 测试组件
+    class App extends React.Component {
+        constructor(props) {
+            super();
+            this.state = {
+                date : new Date()
+            };
+        }
+
+        componentDidMount(){
+            this.timerID = setInterval(
+                ()=>this.tick(),
+                1000
+            )
+        }
+
+        componentWillUnmount() {
+            clearInterval(this.timerID);
+        }
+
+        tick(){
+            this.setState({
+                date:new Date()
+            });
+        }
+
+        render() {
+            return(
+                <div>
+                    <h1>I like  World</h1>
+                    <h2>现在是 {this.state.date.toLocaleTimeString()}.</h2>
+                    <div id="expression">
+                        <h1>{1+1}</h1>
+                    </div>
+                    <h1 style={myStyle}>react var Test</h1>
+                </div>
+            )
+        }
+    }
+    var myStyle={
+        fontsize:100,
+        color:'#FF0000'
+    }
+
+    // 点击替换组件
+    class Toggle extends  React.Component{
+        constructor(props) {
+            super(props);
+            this.state = {
+                isToggle:true
+            }
+             this.handleClick = this.handleClick.bind(this);
+        }
+        handleClick(){
+            this.setState(prevState => ({
+                isToggle: !prevState.isToggle
+            }));
+        }
+        render(){
+            return(
+                <button onClick={this.handleClick}>
+                    {this.state.isToggle ? 'NO':'OFF'}
+                </button>
+            )
+        }
+    }
+
+
+    // 登录注册组件
+    class LoginControl extends React.Component {
+        constructor(props) {
+            super(props);
+            this.handleLoginClick = this.handleLoginClick.bind(this);
+            this.handleLogoutClick = this.handleLogoutClick.bind(this);
+            this.state = {isLoggedIn: false};
+        }
+
+        handleLoginClick() {
+            this.setState({isLoggedIn: true});
+        }
+
+        handleLogoutClick() {
+            this.setState({isLoggedIn: false});
+        }
+
+        render() {
+            const isLoggedIn = this.state.isLoggedIn;
+            let button;
+
+            if (isLoggedIn) {
+                button = <LogoutButton onClick={this.handleLogoutClick} />;
+            } else {
+                button = <LoginButton onClick={this.handleLoginClick} />;
+            }
+
+            return (
+                <div>
+                    <Greeting isLoggedIn={isLoggedIn} />
+                    {button}
+                </div>
+            );
+        }
+    }
+
+    function UserGreeting(props) {
+        return <h1>欢迎回来!</h1>;
+    }
+
+    function GuestGreeting(props) {
+        return <h1>请先注册。</h1>;
+    }
+
+    function Greeting(props) {
+        const isLoggedIn = props.isLoggedIn;
+        if (isLoggedIn) {
+            return <UserGreeting />;
+        }
+        return <GuestGreeting />;
+    }
+
+    function LoginButton(props) {
+        return (
+            <button onClick={props.onClick}>
+                登陆
+            </button>
+        );
+    }
+
+    function LogoutButton(props) {
+        return (
+            <button onClick={props.onClick}>
+                退出
+            </button>
+        );
+    }
+
+    // react API
+    class Counter extends React.Component{
+        constructor(props) {
+            super(props);
+            this.state ={counter :0};
+            this.handle = this.handle.bind(this);
+        }
+
+        handle(){
+            this.setState(function (state) {
+                    return {counter : this.state.counter+1};
+            });
+        }
+        render(){
+            return <h1 onClick={this.handle}>点我，此时的次数为：{this.state.counter}</h1>
+        }
+
+    }
+
+    // 表单与事件
+    class HelloMessage1 extends React.Component{
+        constructor(props) {
+            super(props);
+            this.state ={ value: 'hello world!'};
+            this.handle = this.handle.bind(this);
+        }
+        handle(event){
+            this.setState({value: event.target.value});
+        }
+        render(){
+            var value = this.state.value;
+            return <div>
+                <input type="text" value={value} onChange={this.handle} />
+                <h4>{value}</h4>
+            </div>
+        }
+    }
+
+    // 通过调用父组件进行事件切换
+    class Content extends React.Component{
+        render() {
+            return (
+                <div>
+                    <input type="text" value={this.props.myDataProp} onChange={this.props.updateStateProp}/>
+                    <h4>{this.props.myDataProp}</h4>
+                </div>
+            );
+        }
+    }
+    class HelloMessage2 extends React.Component{
+        constructor(props) {
+            super(props);
+            this.state ={value : 'hello world!'};
+            this.handle = this.handle.bind(this);
+        }
+        handle(event){
+            this.setState({value: event.target.value});
+        }
+        render(){
+            var value = this.state.value;
+            return <div>
+                <Content myDataProp = {value}
+                 updateStateProp = {this.handle}/>
+            </div>
+        }
+    }
+
+    class SelectFrom extends React.Component{
+        constructor(props) {
+            super(props);
+            this.state ={value:'content' };
+
+            this.handleSelect = this.handleSelect.bind(this);
+            this.handleSubmit = this.handleSubmit.bind(this);
+        }
+
+        handleSelect(event){
+            this.setState ({value : event.target.value});
+        }
+        handleSubmit(event){
+            alert('your favorite is :' + this.state.value);
+            event.preventDefault();
+        }
+
+        render(){
+            return(
+                <form onSubmit={this.handleSubmit}>
+                    <label>
+                    请选择您最喜欢的网站：
+                    <select value={this.state.value} onChange={this.handleSelect}>
+                        <option value="gg">Goggle</option>
+                        <option value="rn">Runoob</option>
+                        <option value="tb">Taobao</option>
+                        <option value="fb">Facebook</option>
+                    </select>
+                    </label>
+                    <input type="submit" value="提交"/>
+                </form>
+            )
+        }
+
+    }
+
+    class MyComponent extends React.Component {
+        handleClick() {
+            // 使用原生的 DOM API 获取焦点
+            this.refs.myInput.focus();
+        }
+        render() {
+            //  当组件插入到 DOM 后，ref 属性添加一个组件的引用于到 this.refs
+            return (
+                <div>
+                    <input type="text" ref="myInput" />
+                    <input
+                        type="button"
+                        value="点我输入框获取焦点"
+                        onClick={this.handleClick.bind(this)}
+                    />
+                </div>
+            );
+        }
+    }
+    ReactDOM.render(
+            // <App />,
+            // <Toggle/>,
+            // <!--<Geeting isGeeting={true}/>,-->
+            //<LoginControl />,
+            // <Counter/>,
+            //<HelloMessage2/>,
+            //<SelectFrom/>,
+        <MyComponent/>,
+        document.getElementById('app'),
+        )
+</script>
+</body>
+</html>
